@@ -16,11 +16,10 @@
         <div class="logo-icon"><i class="fas fa-book-open"></i></div>
         <div class="stall-name">paper & oak <small>book stall</small></div>
     </div>
-    <div class="cart-toggle" id="cart-summary-btn">
-        <i class="fas fa-basket-shopping"></i>
-        <span>your basket</span>
-        <span id="cart-count">0</span>
-    </div>
+    <nav class="nav-links">
+        <a href="#" class="nav-link active">home</a>
+        <a href="#" class="nav-link" id="about-link">about</a>
+    </nav>
 </header>
 
 <div class="stall-banner">
@@ -35,26 +34,47 @@
 
 <!-- main shop area -->
 <div class="container">
-    <!-- left side: book grid -->
+    <!-- left side: book grid (will be hidden when about is shown) -->
     <div class="books-grid" id="booksGrid"></div>
 
-    <!-- right side: cart (sticky) -->
-    <div class="cart-section" id="cartSection">
-        <div class="cart-header">
-            <i class="fas fa-basket-shopping"></i>
-            <h2>your stall basket</h2>
+    <!-- right side: about section (hidden by default) -->
+    <div class="about-section hidden" id="aboutSection">
+        <div class="about-header">
+            <i class="fas fa-book-open"></i>
+            <h2>about our stall</h2>
         </div>
-        <div class="cart-items" id="cartItemsContainer">
-            <!-- dynamically populated -->
-            <div class="empty-cart-msg">your basket is gathering dust... 📖</div>
+        <div class="about-content">
+            <div class="about-card">
+                <i class="fas fa-heart"></i>
+                <h3>our story</h3>
+                <p>paper & oak began as a small dream on college street — a place where stories find their readers. we believe in the magic of physical books, the smell of old pages, and the joy of discovering your next favourite read.</p>
+            </div>
+            
+            <div class="about-card">
+                <i class="fas fa-leaf"></i>
+                <h3>our space</h3>
+                <p>tucked away in the bustling college street, our stall is a quiet corner for book lovers. we handpick every book that finds a place on our shelves, from literary fiction to speculative worlds.</p>
+            </div>
+            
+            <div class="about-card">
+                <i class="fas fa-clock"></i>
+                <h3>visit us</h3>
+                <p><i class="fas fa-map-pin"></i> college street, kolkata<br>
+                <i class="fas fa-sun"></i> open daily: 11am — 7pm<br>
+                <i class="fas fa-mug-saucer"></i> sundays: 12pm — 6pm</p>
+            </div>
+            
+            <div class="about-card">
+                <i class="fas fa-hand-sparkles"></i>
+                <h3>what we offer</h3>
+                <p>handpicked books • warm conversations • book recommendations • a cosy reading corner • and sometimes, freshly brewed chai</p>
+            </div>
+            
+            <div class="about-message">
+                <i class="fas fa-quote-right"></i>
+                <p>this is a demo website — a little corner of the internet celebrating the love for books. all stories here are free, just like the joy of reading.</p>
+            </div>
         </div>
-        <div class="cart-total">
-            <span>total</span>
-            <span id="cartTotalAmount">0</span>
-        </div>
-        <button class="checkout-btn" id="checkoutBtn">
-            <i class="fas fa-bag-shopping"></i> check out · imaginary
-        </button>
     </div>
 </div>
 
