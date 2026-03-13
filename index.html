@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paper & Oak | book stall</title>
+    <title>Paper & Oak · book stall</title>
     <!-- Font Awesome 6 (free) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- External CSS -->
+    <!-- external CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,6 +21,7 @@
         <a href="#" class="nav-link" id="books-link">books</a>
         <a href="#" class="nav-link" id="about-link">about</a>
     </nav>
+    <!-- cart button in navbar — opens flyout -->
     <div class="cart-toggle" id="cart-summary-btn">
         <i class="fas fa-basket-shopping"></i>
         <span>your basket</span>
@@ -38,33 +39,14 @@
     </div>
 </div>
 
-<!-- main shop area -->
+<!-- main shop area (no cart sidebar) -->
 <div class="container">
-    <!-- books section with grid -->
     <div class="books-section" id="booksSection">
         <div class="books-header">
             <h2>our collection</h2>
             <p>browse through our handpicked selection</p>
         </div>
         <div class="books-grid" id="booksGrid"></div>
-    </div>
-
-    <!-- cart section -->
-    <div class="cart-section" id="cartSection">
-        <div class="cart-header">
-            <i class="fas fa-basket-shopping"></i>
-            <h2>your stall basket</h2>
-        </div>
-        <div class="cart-items" id="cartItemsContainer">
-            <div class="empty-cart-msg">your basket is gathering dust... 📖</div>
-        </div>
-        <div class="cart-total">
-            <span>total</span>
-            <span id="cartTotalAmount">0</span>
-        </div>
-        <button class="checkout-btn" id="checkoutBtn">
-            <i class="fas fa-bag-shopping"></i> check out · imaginary
-        </button>
     </div>
 </div>
 
@@ -75,44 +57,38 @@
         <h2>about our stall</h2>
     </div>
     <div class="about-content">
-        <div class="about-card">
-            <i class="fas fa-heart"></i>
-            <h3>our story</h3>
-            <p>paper & oak began as a small dream on college street — a place where stories find their readers. we believe in the magic of physical books, the smell of old pages, and the joy of discovering your next favourite read.</p>
-        </div>
-        
-        <div class="about-card">
-            <i class="fas fa-leaf"></i>
-            <h3>our space</h3>
-            <p>tucked away in the bustling college street, our stall is a quiet corner for book lovers. we handpick every book that finds a place on our shelves, from literary fiction to speculative worlds.</p>
-        </div>
-        
-        <div class="about-card">
-            <i class="fas fa-clock"></i>
-            <h3>visit us</h3>
-            <p><i class="fas fa-map-pin"></i> college street, kolkata<br>
-            <i class="fas fa-sun"></i> open daily: 11am — 7pm<br>
-            <i class="fas fa-mug-saucer"></i> sundays: 12pm — 6pm</p>
-        </div>
-        
-        <div class="about-card">
-            <i class="fas fa-hand-sparkles"></i>
-            <h3>what we offer</h3>
-            <p>handpicked books • warm conversations • book recommendations • a cosy reading corner • and sometimes, freshly brewed chai</p>
-        </div>
-        
-        <div class="about-message">
-            <i class="fas fa-quote-right"></i>
-            <p>this is a demo website — a little corner of the internet celebrating the love for books. all stories here are free, just like the joy of reading.</p>
-        </div>
+        <div class="about-card"><i class="fas fa-heart"></i><h3>our story</h3><p>paper & oak began as a small dream on college street — a place where stories find their readers.</p></div>
+        <div class="about-card"><i class="fas fa-leaf"></i><h3>our space</h3><p>tucked away in the bustling college street, our stall is a quiet corner for book lovers.</p></div>
+        <div class="about-card"><i class="fas fa-clock"></i><h3>visit us</h3><p><i class="fas fa-map-pin"></i> college street, kolkata<br> open daily: 11am — 7pm</p></div>
+        <div class="about-card"><i class="fas fa-hand-sparkles"></i><h3>what we offer</h3><p>handpicked books • warm conversations • book recommendations • sometimes chai</p></div>
+        <div class="about-message"><i class="fas fa-quote-right"></i><p>this is a demo website — a little corner of the internet celebrating the love for books.</p></div>
     </div>
 </div>
+
+<!-- FLYOUT CART (hidden initially) -->
+<div class="cart-flyout" id="cartFlyout">
+    <div class="flyout-header">
+        <h2><i class="fas fa-basket-shopping"></i> your basket</h2>
+        <button class="close-flyout" id="closeFlyoutBtn">&times;</button>
+    </div>
+    <div class="flyout-items" id="flyoutItemsContainer">
+        <div class="empty-cart-msg">your basket is gathering dust... 📖</div>
+    </div>
+    <div class="flyout-footer">
+        <div class="flyout-total">
+            <span>total</span>
+            <span id="flyoutTotalAmount">0</span>
+        </div>
+        <button class="flyout-checkout" id="flyoutCheckoutBtn"><i class="fas fa-bag-shopping"></i> check out · imaginary</button>
+    </div>
+</div>
+<div class="flyout-overlay" id="flyoutOverlay"></div>
 
 <footer class="stall-footer">
     <p>🍂 paper & oak book stall · all stories are free (demo only)</p>
 </footer>
 
-<!-- External JavaScript -->
+<!-- external JavaScript -->
 <script src="script.js"></script>
 </body>
 </html>

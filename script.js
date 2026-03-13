@@ -1,3 +1,4 @@
+// script.js
 (function() {
     // ---------- book data ----------
     const books = [
@@ -18,11 +19,17 @@
 
     // ---------- DOM elements ----------
     const booksGrid = document.getElementById('booksGrid');
-    const cartItemsContainer = document.getElementById('cartItemsContainer');
-    const cartTotalSpan = document.getElementById('cartTotalAmount');
     const cartCountSpan = document.getElementById('cart-count');
-    const checkoutBtn = document.getElementById('checkoutBtn');
     
+    // Flyout elements
+    const flyout = document.getElementById('cartFlyout');
+    const overlay = document.getElementById('flyoutOverlay');
+    const closeFlyoutBtn = document.getElementById('closeFlyoutBtn');
+    const cartSummaryBtn = document.getElementById('cart-summary-btn');
+    const flyoutItemsContainer = document.getElementById('flyoutItemsContainer');
+    const flyoutTotalSpan = document.getElementById('flyoutTotalAmount');
+    const flyoutCheckout = document.getElementById('flyoutCheckoutBtn');
+
     // Navigation elements
     const homeLink = document.getElementById('home-link');
     const booksLink = document.getElementById('books-link');
@@ -30,8 +37,6 @@
     const booksSection = document.getElementById('booksSection');
     const aboutSection = document.getElementById('aboutSection');
     const stallBanner = document.getElementById('stallBanner');
-    const cartSection = document.getElementById('cartSection');
-    const container = document.querySelector('.container');
     const navLinks = document.querySelectorAll('.nav-link');
 
     // ---------- render book grid ----------
@@ -40,11 +45,8 @@
         books.forEach(book => {
             const card = document.createElement('div');
             card.className = 'book-card';
-            card.setAttribute('data-book-id', book.id);
             card.innerHTML = `
-                <div class="cover-icon">
-                    <i class="fas fa-book" style="font-size: 3rem;"></i>
-                </div>
+                <div class="cover-icon"><i class="fas fa-book" style="font-size: 3rem;"></i></div>
                 <div class="book-title">${book.title}</div>
                 <div class="book-author">${book.author}</div>
                 <div class="book-price">${book.price}</div>
@@ -55,13 +57,13 @@
             booksGrid.appendChild(card);
         });
 
-        // Attach event listeners to add buttons
+        // Attach event listeners to all "add to basket" buttons
         document.querySelectorAll('.add-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const id = btn.getAttribute('data-id');
-                const title = btn.getAttribute('data-title');
-                const price = parseInt(btn.getAttribute('data-price'), 10);
+                const id = btn.dataset.id;
+                const title = btn.dataset.title;
+                const price = parseInt(btn.dataset.price, 10);
                 addToCart(id, title, price);
             });
         });
@@ -72,12 +74,7 @@
         if (cart[id]) {
             cart[id].quantity += 1;
         } else {
-            cart[id] = {
-                id: id,
-                title: title,
-                price: price,
-                quantity: 1
-            };
+            cart[id] = { id, title, price, quantity: 1 };
         }
         updateCartUI();
     }
@@ -94,15 +91,12 @@
     }
 
     function deleteItemCompletely(id) {
-        if (cart[id]) {
-            delete cart[id];
-        }
+        delete cart[id];
         updateCartUI();
     }
 
     function computeCartSummary() {
-        let totalItems = 0;
-        let totalPrice = 0;
+        let totalItems = 0, totalPrice = 0;
         Object.values(cart).forEach(item => {
             totalItems += item.quantity;
             totalPrice += item.price * item.quantity;
@@ -114,12 +108,13 @@
         const { totalItems, totalPrice } = computeCartSummary();
         cartCountSpan.textContent = totalItems;
 
+        // update flyout content
         if (totalItems === 0) {
-            cartItemsContainer.innerHTML = `<div class="empty-cart-msg">your basket is gathering dust... 📖</div>`;
+            flyoutItemsContainer.innerHTML = `<div class="empty-cart-msg">your basket is gathering dust... 📖</div>`;
         } else {
-            let htmlStr = '';
+            let html = '';
             Object.values(cart).forEach(item => {
-                htmlStr += `
+                html += `
                     <div class="cart-item" data-id="${item.id}">
                         <div class="cart-item-info">
                             <span class="cart-item-title">${item.title}</span>
@@ -134,135 +129,87 @@
                     </div>
                 `;
             });
-            cartItemsContainer.innerHTML = htmlStr;
+            flyoutItemsContainer.innerHTML = html;
 
-            // Attach event listeners to cart item buttons
-            cartItemsContainer.querySelectorAll('.qty-decrease').forEach(btn => {
+            // attach listeners inside flyout
+            flyoutItemsContainer.querySelectorAll('.qty-decrease').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const id = btn.getAttribute('data-id');
-                    removeOneFromCart(id);
+                    removeOneFromCart(btn.dataset.id);
                 });
             });
-            cartItemsContainer.querySelectorAll('.qty-increase').forEach(btn => {
+            flyoutItemsContainer.querySelectorAll('.qty-increase').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const id = btn.getAttribute('data-id');
-                    if (cart[id]) {
-                        addToCart(id, cart[id].title, cart[id].price);
-                    }
+                    const id = btn.dataset.id;
+                    if (cart[id]) addToCart(id, cart[id].title, cart[id].price);
                 });
             });
-            cartItemsContainer.querySelectorAll('.item-remove').forEach(btn => {
+            flyoutItemsContainer.querySelectorAll('.item-remove').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const id = btn.getAttribute('data-id');
-                    deleteItemCompletely(id);
+                    deleteItemCompletely(btn.dataset.id);
                 });
             });
         }
-
-        cartTotalSpan.textContent = totalPrice;
+        flyoutTotalSpan.textContent = totalPrice;
     }
 
-    // ---------- navigation functions ----------
-    function showHome() {
-        // Show banner
-        stallBanner.classList.remove('hidden');
-        
-        // Show books section
-        booksSection.classList.remove('hidden');
-        
-        // Hide about section
-        aboutSection.classList.add('hidden');
-        
-        // Show cart in container
-        cartSection.style.display = 'block';
-        container.classList.remove('about-active');
-        
-        // Update active nav link
-        navLinks.forEach(link => link.classList.remove('active'));
-        homeLink.classList.add('active');
+    // ---------- flyout controls ----------
+    function openFlyout() {
+        flyout.classList.add('open');
+        overlay.classList.add('show');
+    }
+    function closeFlyout() {
+        flyout.classList.remove('open');
+        overlay.classList.remove('show');
     }
 
-    function showBooks() {
-        // Show banner
-        stallBanner.classList.remove('hidden');
-        
-        // Show books section
-        booksSection.classList.remove('hidden');
-        
-        // Hide about section
-        aboutSection.classList.add('hidden');
-        
-        // Show cart in container
-        cartSection.style.display = 'block';
-        container.classList.remove('about-active');
-        
-        // Update active nav link
-        navLinks.forEach(link => link.classList.remove('active'));
-        booksLink.classList.add('active');
-        
-        // Scroll to books section smoothly
-        booksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    cartSummaryBtn.addEventListener('click', openFlyout);
+    closeFlyoutBtn.addEventListener('click', closeFlyout);
+    overlay.addEventListener('click', closeFlyout);
 
-    function showAbout() {
-        // Hide banner
-        stallBanner.classList.add('hidden');
-        
-        // Hide books section
-        booksSection.classList.add('hidden');
-        
-        // Show about section
-        aboutSection.classList.remove('hidden');
-        
-        // Hide cart in container and adjust layout
-        cartSection.style.display = 'none';
-        container.classList.add('about-active');
-        
-        // Update active nav link
-        navLinks.forEach(link => link.classList.remove('active'));
-        aboutLink.classList.add('active');
-        
-        // Scroll to about section smoothly
-        aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    // ---------- event listeners ----------
-    document.getElementById('cart-summary-btn').addEventListener('click', () => {
-        if (!booksSection.classList.contains('hidden')) {
-            cartSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    });
-
-    checkoutBtn.addEventListener('click', () => {
+    flyoutCheckout.addEventListener('click', () => {
         const { totalItems } = computeCartSummary();
         if (totalItems === 0) {
             alert('Your basket is empty — add a book or two!');
         } else {
             alert('📦 Thanks for visiting the stall! (demo — no actual checkout)');
+            closeFlyout();
         }
     });
 
-    // Navigation event listeners
-    homeLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        showHome();
-    });
+    // ---------- navigation ----------
+    function showHome() {
+        stallBanner.classList.remove('hidden');
+        booksSection.classList.remove('hidden');
+        aboutSection.classList.add('hidden');
+        navLinks.forEach(l => l.classList.remove('active'));
+        homeLink.classList.add('active');
+    }
+    function showBooks() {
+        stallBanner.classList.remove('hidden');
+        booksSection.classList.remove('hidden');
+        aboutSection.classList.add('hidden');
+        navLinks.forEach(l => l.classList.remove('active'));
+        booksLink.classList.add('active');
+        booksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    function showAbout() {
+        stallBanner.classList.add('hidden');
+        booksSection.classList.add('hidden');
+        aboutSection.classList.remove('hidden');
+        navLinks.forEach(l => l.classList.remove('active'));
+        aboutLink.classList.add('active');
+        aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
-    booksLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        showBooks();
-    });
-
-    aboutLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        showAbout();
-    });
+    homeLink.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
+    booksLink.addEventListener('click', (e) => { e.preventDefault(); showBooks(); });
+    aboutLink.addEventListener('click', (e) => { e.preventDefault(); showAbout(); });
 
     // ---------- initial rendering ----------
     renderBooks();
     updateCartUI();
-    showHome(); // Start with home view
+    showHome(); // start with home view
 })();
